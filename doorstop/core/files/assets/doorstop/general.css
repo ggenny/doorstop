@@ -13,3 +13,15 @@ section > * {
 section > :first-child {
     margin-left: 0px;
 }
+
+.l1 {
+    margin-left: 0px;
+}
+
+.l2 {
+    margin-left: 0px;
+}
+
+.l3 {
+    margin-left: 40px;
+}

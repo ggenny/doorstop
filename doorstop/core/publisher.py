@@ -168,9 +168,11 @@ def _lines_index(filenames, charset='UTF-8', tree=None):
         '<meta http-equiv="content-type" content="text/html; '
         'charset={charset}">'.format(charset=charset)
     )
-    yield '<style type="text/css">'
-    yield from _lines_css()
-    yield '</style>'
+#    yield '<style type="text/css">'
+    yield '<link rel="stylesheet" href="assets/doorstop/bootstrap.min.css" />'
+    yield '<link rel="stylesheet" href="assets/doorstop/general.css" />'
+#   yield from _lines_css()
+#    yield '</style>'
     yield '</head>'
     yield '<body>'
     # Tree structure
@@ -203,14 +205,14 @@ def _lines_index(filenames, charset='UTF-8', tree=None):
         # table
         yield '<h3>Item Traceability:</h3>'
         yield '<p>'
-        yield '<table>'
+        yield '<table class="table table-striped table-condensed">'
         # header
         for document in documents:  # pylint: disable=not-an-iterable
-            yield '<col width="100">'
+            yield '<col width="140">'
         yield '<tr>'
         for document in documents:  # pylint: disable=not-an-iterable
             link = '<a href="{p}.html">{p}</a>'.format(p=document.prefix)
-            yield ('  <th height="25" align="center"> {link} </th>'.format(link=link))
+            yield ('  <th height="25" align="left"> {link} </th>'.format(link=link))
         yield '</tr>'
         # data
         for index, row in enumerate(tree.get_traceability()):
@@ -223,7 +225,7 @@ def _lines_index(filenames, charset='UTF-8', tree=None):
                     link = ''
                 else:
                     link = _format_html_item_link(item)
-                yield '  <td height="25" align="center"> {} </td>'.format(link)
+                yield '  <td height="25" align="left"> {} </td>'.format(link)
             yield '</tr>'
         yield '</table>'
         yield '</p>'
@@ -398,10 +400,14 @@ def _lines_markdown(obj, **kwargs):
 
         heading = '#' * item.depth
         level = _format_level(item.level)
+        yield "<hr />"
+
+        yield '<div class="l{d}" markdown="1">'.format(d=item.depth)
 
         if item.heading:
             text_lines = item.text.splitlines()
             # Level and Text
+
             if settings.PUBLISH_HEADING_LEVELS:
                 standard = "{h} {lev} {t}".format(
                     h=heading, lev=level, t=text_lines[0] if text_lines else ''
@@ -411,6 +417,7 @@ def _lines_markdown(obj, **kwargs):
                     h=heading, t=text_lines[0] if text_lines else ''
                 )
             attr_list = _format_md_attr_list(item, True)
+
             yield standard + attr_list
             yield from text_lines[1:]
         else:
@@ -482,8 +489,8 @@ def _lines_markdown(obj, **kwargs):
                     yield "| {} | {} |".format(attr, item.attribute(attr))
                 yield ""
 
+        yield '</div>'
         yield ""  # break between items
-
 
 def _format_level(level):
     """Convert a level to a string and keep zeros if not a top level."""
@@ -597,7 +604,7 @@ def _format_html_item_link(item, linkify=True):
     """Format an item link in HTML."""
     if linkify and is_item(item):
         if item.header:
-            link = '<a href="{p}.html#{u}">{u} {h}</a>'.format(
+            link = '<a href="{p}.html#{u}">{u}</a><br/>{h}'.format(
                 u=item.uid, h=item.header, p=item.document.prefix
             )
         else:
